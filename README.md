@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Signalboard — Facebook/Instagram page automation dashboard (frontend)
 
 ## The vision (read this before touching anything)
@@ -192,3 +193,6 @@ TypeScript. Deps: `framer-motion`, `recharts`, `lenis`, `lucide-react`.
 Verified this session: `npm run build` compiles clean, and `next start`
 serves `/`, `/leads`, and `/posts` all at 200 with the new dashboard
 markup present.
+=======
+
+>>>>>>> 3e20ead6600871235435488ea0664dc547188732
