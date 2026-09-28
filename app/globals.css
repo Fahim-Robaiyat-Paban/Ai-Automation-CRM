@@ -1,0 +1,220 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: "Space Grotesk", sans-serif;
+  --font-body: "Inter", sans-serif;
+
+  /* dark theme (default) — deep indigo canvas, brighter accents so charts glow.
+     R G B triplets consumed by tailwind.config.js */
+  --c-void: 8 9 21;
+  --c-panel: 17 19 37;
+  --c-raised: 25 28 52;
+  --c-line: 42 47 80;
+  --c-ink: 236 238 251;
+  --c-mute: 134 141 172;
+  --c-signal: 88 240 216;
+  --c-wire: 112 152 255;
+  --c-amber: 252 178 88;
+  --c-rose: 252 114 140;
+  --c-mint: 78 234 146;
+}
+
+.light {
+  /* light theme: cool tinted canvas + saturated accents, so gradients read
+     as colour instead of grey wash on white */
+  --c-void: 238 242 252;
+  --c-panel: 255 255 255;
+  --c-raised: 243 246 254;
+  --c-line: 221 227 243;
+  --c-ink: 20 22 42;
+  --c-mute: 98 105 133;
+  --c-signal: 13 148 136;
+  --c-wire: 79 70 229;
+  --c-amber: 217 119 6;
+  --c-rose: 225 29 72;
+  --c-mint: 5 150 105;
+}
+
+/* cards need a lift on a light canvas — borders alone look flat */
+.light .bg-panel {
+  box-shadow: 0 1px 2px rgb(30 40 90 / 0.05), 0 12px 28px -16px rgb(30 40 90 / 0.18);
+}
+
+* {
+  border-color: rgb(var(--c-line));
+}
+
+html {
+  color-scheme: dark;
+}
+html.light {
+  color-scheme: light;
+}
+
+body {
+  background-color: rgb(var(--c-void));
+  color: rgb(var(--c-ink));
+  transition: background-color 0.35s ease, color 0.35s ease;
+}
+
+/* ambient gradient mesh sitting behind every page. Each route hands AmbientMesh
+   a different pair of positions/colors (see app/components/AmbientMesh.js), so
+   the wash isn't the same fixed corner-blob on every screen — it crossfades to
+   a new spot and hue on navigation, and drifts gently while you're on a page. */
+.mesh-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.mesh-blob {
+  position: absolute;
+  width: 44vw;
+  height: 44vw;
+  max-width: 640px;
+  max-height: 640px;
+  border-radius: 999px;
+  filter: blur(120px);
+  opacity: 0.17;
+  transform: translate(-50%, -50%);
+  animation: mesh-drift 24s ease-in-out infinite alternate;
+  will-change: transform;
+}
+.light .mesh-blob {
+  opacity: 0.32;
+}
+@keyframes mesh-drift {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    transform: translate(-44%, -56%) scale(1.1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mesh-blob {
+    animation: none;
+  }
+}
+
+/* the single most-notable stat card gets a slow-pulsing accent instead of
+   every card wearing the same static corner glow at the same strength */
+@keyframes stat-highlight-pulse {
+  0%,
+  100% {
+    opacity: 0.32;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+.stat-highlight {
+  animation: stat-highlight-pulse 2.8s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .stat-highlight {
+    animation: none;
+    opacity: 0.45;
+  }
+}
+
+/* signal rail — the vertical trace the live activity / conversation feed runs along */
+.rail {
+  position: relative;
+}
+.rail::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  background: linear-gradient(to bottom, rgb(var(--c-signal)), rgb(var(--c-line) / 0) 95%);
+}
+.rail-dot {
+  position: absolute;
+  left: 0;
+  top: 4px;
+  width: 11px;
+  height: 11px;
+  border-radius: 999px;
+  border: 2px solid rgb(var(--c-void));
+}
+
+/* text that carries a brand gradient */
+.text-grad-signal {
+  background: linear-gradient(135deg, rgb(var(--c-signal)), rgb(var(--c-wire)));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--c-line));
+  border-radius: 999px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* lenis smooth-scroll */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* recharts tooltip theming */
+.recharts-default-tooltip {
+  background: rgb(var(--c-panel)) !important;
+  border: 1px solid rgb(var(--c-line)) !important;
+  border-radius: 10px !important;
+}
+
+
+/* ---- dark mode depth (light mode untouched) ------------------------------
+   Cards get a saturated corner glow that fades into the dark base, a border in
+   their own colour, and a faint top highlight — instead of a flat grey wash. */
+html:not(.light) .bg-panel {
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04), 0 14px 34px -20px rgb(0 0 0 / 0.7);
+}
+html:not(.light) [data-accent],
+html:not(.light) [data-tint] {
+  border-color: rgb(var(--tint) / 0.3);
+  background-image: radial-gradient(120% 150% at 0% 0%, rgb(var(--tint) / 0.2), transparent 62%);
+}
+html:not(.light) [data-tint][data-highlight="true"] {
+  border-color: rgb(var(--tint) / 0.65);
+}
+html:not(.light) [data-accent="signal"], html:not(.light) [data-tint="signal"] { --tint: var(--c-signal); }
+html:not(.light) [data-accent="wire"], html:not(.light) [data-tint="wire"] { --tint: var(--c-wire); }
+html:not(.light) [data-accent="amber"], html:not(.light) [data-tint="amber"] { --tint: var(--c-amber); }
+html:not(.light) [data-accent="mint"], html:not(.light) [data-tint="mint"] { --tint: var(--c-mint); }
+html:not(.light) [data-accent="rose"], html:not(.light) [data-tint="rose"] { --tint: var(--c-rose); }
+
+/* one big hard-edged blob became a dimmer mesh plus two soft static glows */
+html:not(.light) .mesh-bg { opacity: 0.45; }
+html:not(.light) body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 50% at 15% 85%, rgb(var(--c-wire) / 0.1), transparent 70%),
+    radial-gradient(55% 45% at 90% 8%, rgb(var(--c-signal) / 0.08), transparent 70%);
+}
